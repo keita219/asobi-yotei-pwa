@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#00B900">
+    <meta name="description" content="友人グループの遊び予定を管理するアプリ">
+    
+    <title>遊び予定管理</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ローディング画面 -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>読み込み中...</p>
+    </div>
+
+    <!-- アプリコンテナ -->
+    <div id="app" class="app" style="display: none;">
+        
+        <!-- ユーザー選択画面 -->
+        <div id="user-select-screen" class="screen">
+            <div class="user-select-container">
+                <h1>🎮 遊び予定管理</h1>
+                <p class="subtitle">あなたの名前を選択してください</p>
+                <div id="user-list" class="user-list"></div>
+            </div>
+        </div>
+
+        <!-- ホーム画面 -->
+        <div id="home-screen" class="screen" style="display: none;">
+            <!-- 未払金額バナー -->
+            <div id="unpaid-banner" class="unpaid-banner" style="display: none;">
+                <div class="unpaid-content">
+                    <span class="unpaid-icon">💰</span>
+                    <div class="unpaid-info">
+                        <div class="unpaid-label">未払金額</div>
+                        <div id="unpaid-amount" class="unpaid-amount">¥0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ヘッダー -->
+            <header class="header">
+                <h1>🎮 遊び予定管理</h1>
+                <div id="current-user" class="current-user"></div>
+            </header>
+
+            <!-- メインコンテンツ -->
+            <main class="main-content">
+                <!-- 予定調整中セクション -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2>📅 予定調整中</h2>
+                        <button id="create-schedule-btn" class="btn-icon">+</button>
+                    </div>
+                    <div id="schedules-list" class="card-list"></div>
+                </section>
+
+                <!-- 確定イベントセクション -->
+                <section class="section">
+                    <h2>✅ 確定イベント</h2>
+                    <div id="events-list" class="card-list"></div>
+                </section>
+            </main>
+        </div>
+
+        <!-- 予定調整詳細画面 -->
+        <div id="schedule-detail-screen" class="screen" style="display: none;">
+            <header class="header">
+                <button class="btn-back" onclick="showHome()">←</button>
+                <h1 id="schedule-title">予定調整</h1>
+                <button id="edit-schedule-btn" class="btn-text">編集</button>
+            </header>
+
+            <main class="main-content">
+                <div id="schedule-detail-content"></div>
+                <button id="confirm-event-btn" class="btn-primary">この予定を確定</button>
+            </main>
+        </div>
+
+        <!-- 予定回答画面 -->
+        <div id="response-screen" class="screen" style="display: none;">
+            <header class="header">
+                <button class="btn-back" onclick="backToScheduleDetail()">←</button>
+                <h1>日程回答</h1>
+            </header>
+
+            <main class="main-content">
+                <div id="schedule-info" class="schedule-info"></div>
+                <div id="response-form" class="response-form"></div>
+                <button id="submit-response-btn" class="btn-primary">完了</button>
+            </main>
+        </div>
+
+        <!-- イベント詳細画面 -->
+        <div id="event-detail-screen" class="screen" style="display: none;">
+            <header class="header">
+                <button class="btn-back" onclick="showHome()">←</button>
+                <h1 id="event-title">イベント詳細</h1>
+            </header>
+
+            <main class="main-content">
+                <div id="event-detail-content"></div>
+            </main>
+        </div>
+
+        <!-- 予定作成モーダル -->
+        <div id="create-schedule-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>新しい予定を作成</h2>
+                <form id="create-schedule-form">
+                    <div class="form-group">
+                        <label>タイトル</label>
+                        <input type="text" id="schedule-title-input" required placeholder="例: 2月の遊び予定">
+                    </div>
+                    <div class="form-group">
+                        <label>候補日を選択(最大10個)</label>
+                        <div id="date-inputs"></div>
+                        <button type="button" id="add-date-btn" class="btn-secondary">+ 候補日を追加</button>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeCreateScheduleModal()">キャンセル</button>
+                        <button type="submit" class="btn-primary">作成</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- イベント確定モーダル -->
+        <div id="confirm-event-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>イベントを確定</h2>
+                <form id="confirm-event-form">
+                    <div class="form-group">
+                        <label>タイトル</label>
+                        <input type="text" id="event-title-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>日時</label>
+                        <input type="datetime-local" id="event-datetime-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>場所</label>
+                        <input type="text" id="event-location-input" required placeholder="例: 新宿SCRAP">
+                    </div>
+                    <div class="form-group">
+                        <label>立替者</label>
+                        <select id="event-payer-input" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>総額(円)</label>
+                        <input type="number" id="event-total-input" required placeholder="24500">
+                    </div>
+                    <div class="form-group">
+                        <label>参加者</label>
+                        <div id="participants-checkboxes"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>一人当たり: <span id="amount-per-person">¥0</span></label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeConfirmEventModal()">キャンセル</button>
+                        <button type="submit" class="btn-primary">確定</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 支払い完了ダイアログ -->
+        <div id="payment-dialog" class="modal" style="display: none;">
+            <div class="modal-content modal-small">
+                <h2>💰 支払い完了確認</h2>
+                <p id="payment-confirm-text">¥0を支払い完了しましたか?</p>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="confirmPayment()">完了</button>
+                    <button class="btn-secondary" onclick="closePaymentDialog()">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+    <script src="js/schedule.js"></script>
+    <script src="js/event.js"></script>
+    <script src="js/payment.js"></script>
+</body>
+</html>

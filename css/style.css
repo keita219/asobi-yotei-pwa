@@ -1,0 +1,684 @@
+/* ========================================
+   遊び予定管理PWA - スタイルシート
+   LINEスケジュール風のデザイン
+   ======================================== */
+
+/* ========================================
+   リセット & ベーススタイル
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* カラーパレット */
+    --primary-color: #00B900;
+    --primary-dark: #009900;
+    --primary-light: #E8F5E9;
+    --secondary-color: #FFA726;
+    --danger-color: #F44336;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-light: #999999;
+    --bg-color: #F5F5F5;
+    --card-bg: #FFFFFF;
+    --border-color: #E0E0E0;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    /* フォント */
+    --font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* スペーシング */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* ========================================
+   ローディング画面
+   ======================================== */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading p {
+    margin-top: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   アプリコンテナ
+   ======================================== */
+.app {
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-color: var(--card-bg);
+}
+
+.screen {
+    min-height: 100vh;
+    padding-bottom: var(--spacing-xl);
+}
+
+/* ========================================
+   ユーザー選択画面
+   ======================================== */
+.user-select-container {
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.user-select-container h1 {
+    font-size: 32px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.user-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.user-item {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-item:hover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.user-item:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   未払金額バナー
+   ======================================== */
+.unpaid-banner {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+    color: white;
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.unpaid-banner:active {
+    transform: scale(0.98);
+}
+
+.unpaid-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.unpaid-icon {
+    font-size: 32px;
+}
+
+.unpaid-info {
+    flex: 1;
+}
+
+.unpaid-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.unpaid-amount {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* ========================================
+   ヘッダー
+   ======================================== */
+.header {
+    background-color: var(--card-bg);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    font-size: 20px;
+    flex: 1;
+}
+
+.current-user {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    margin-right: var(--spacing-sm);
+    color: var(--primary-color);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 16px;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+}
+
+/* ========================================
+   メインコンテンツ
+   ======================================== */
+.main-content {
+    padding: var(--spacing-md);
+}
+
+.section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.section h2 {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.btn-icon {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--primary-dark);
+}
+
+/* ========================================
+   カードリスト
+   ======================================== */
+.card-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card:active {
+    transform: translateY(0);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.card-meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.card-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-pending {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.badge-unpaid {
+    background-color: #FFEBEE;
+    color: var(--danger-color);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-light);
+}
+
+/* ========================================
+   予定調整詳細
+   ======================================== */
+.schedule-table {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.schedule-row {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    min-height: 60px;
+}
+
+.schedule-row:last-child {
+    border-bottom: none;
+}
+
+.schedule-date {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.schedule-date.highlight {
+    color: var(--primary-color);
+}
+
+.schedule-counts {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 14px;
+}
+
+.count-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.count-ok { color: var(--primary-color); }
+.count-maybe { color: var(--secondary-color); }
+.count-ng { color: var(--danger-color); }
+.count-none { color: var(--text-light); }
+
+/* ========================================
+   予定回答フォーム
+   ======================================== */
+.schedule-info {
+    background-color: var(--primary-light);
+    padding: var(--spacing-md);
+    border-radius: 12px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.response-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.response-row {
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    min-height: 60px;
+}
+
+.response-date {
+    flex: 1;
+    font-size: 16px;
+}
+
+.response-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.response-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    background-color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.response-btn:hover {
+    transform: scale(1.1);
+}
+
+.response-btn.active-ok {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.response-btn.active-maybe {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.response-btn.active-ng {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+/* ========================================
+   イベント詳細
+   ======================================== */
+.event-info {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.event-info-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    font-size: 16px;
+}
+
+.event-info-row:last-child {
+    margin-bottom: 0;
+}
+
+.event-icon {
+    font-size: 20px;
+}
+
+.participants-section {
+    margin-top: var(--spacing-lg);
+}
+
+.participants-section h3 {
+    font-size: 16px;
+    margin-bottom: var(--spacing-md);
+}
+
+.participant-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+
+.participant-status {
+    font-size: 18px;
+}
+
+/* ========================================
+   ボタン
+   ======================================== */
+.btn-primary,
+.btn-secondary {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: var(--spacing-md);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+/* ========================================
+   モーダル
+   ======================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-md);
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-small {
+    max-width: 350px;
+}
+
+.modal-content h2 {
+    font-size: 20px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: var(--font-family);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.modal-actions button {
+    flex: 1;
+    margin-top: 0;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-item label {
+    margin: 0;
+    cursor: pointer;
+    flex: 1;
+}
+
+/* ========================================
+   レスポンシブ
+   ======================================== */
+@media (max-width: 600px) {
+    .user-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        max-height: 95vh;
+    }
+}
+
+/* ========================================
+   ユーティリティ
+   ======================================== */
+.text-center {
+    text-align: center;
+}
+
+.mt-md {
+    margin-top: var(--spacing-md);
+}
+
+.mb-md {
+    margin-bottom: var(--spacing-md);
+}
+
+.hidden {
+    display: none !important;
+}
